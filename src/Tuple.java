@@ -16,5 +16,12 @@ public class Tuple {
 	  public Tuple clone(){
 		  return new Tuple(this.id, this.value);
 	  }
+
+	@Override
+	public String toString() {
+		return "Tuple [id=" + id + ", value=" + value + "]";
+	}
+	  
+
 	  
 }

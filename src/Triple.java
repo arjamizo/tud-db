@@ -14,4 +14,12 @@ public class Triple {
 	  public int getID() { return id; }
 	  public int getValue1() { return value1; }
 	  public int getValue2() { return value2; }
+
+	@Override
+	public String toString() {
+		return "Triple [id=" + id + ", value1=" + value1 + ", value2=" + value2
+				+ "]";
+	}
+	  
+	  
 }
