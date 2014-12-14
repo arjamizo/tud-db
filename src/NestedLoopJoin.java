@@ -3,12 +3,10 @@ import java.util.List;
 
 public class NestedLoopJoin implements Join{
 
-	@Override
 	public String getName() {
 		return "Nested Loop Join";
 	}
 	
-	@Override
 	public List<Triple> join(List<Tuple> input1, List<Tuple> input2) {
 		
 		List<Triple> result = new ArrayList<Triple>();
