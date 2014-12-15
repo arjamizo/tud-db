@@ -3,7 +3,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class SortMergeJoin implements Join{
 	
@@ -18,6 +17,29 @@ public class SortMergeJoin implements Join{
 	}
 	
 	public SortMergeJoin() {
+	}
+
+	public static <T> int lower_bound(T[] arr, T key, Comparator<T> c) {
+	    int len = arr.length;
+	    int lo = 0;
+	    int hi = len - 1;
+	    int mid; 
+	    mid = (lo + hi) / 2;
+	    while (true) {
+		int cmp = c.compare(arr[mid], key);
+		if (cmp == 0 || cmp > 0) {
+		    hi = mid - 1;
+		    if (hi < lo) {
+			return mid;
+		    }
+		} else {
+		    lo = mid + 1;
+		    if (hi < lo) {
+			return mid < len - 1 ? mid + 1 : -1;
+		    }
+		}
+		mid = (lo + hi) / 2;
+	    }
 	}
 	
 	public List<Triple> join(List<Tuple> input1, List<Tuple> input2) {
@@ -68,22 +90,20 @@ public class SortMergeJoin implements Join{
 			} else {
 				long s = System.currentTimeMillis();
 				long s1 = System.currentTimeMillis();
-				// Skip null joins at the beginning
-				int idx2 = Arrays.binarySearch(inp2, new Tuple(t.getID(), 0), cmp);
+				
+				int idx2 = lower_bound(inp2, new Tuple(t.getID(), 0), cmp);
+				
 				long e1 = System.currentTimeMillis();
 				inside += e1-s1;
-				if(idx2<0) continue;
-				while(idx2>0 && inp2[idx2].getID() >= t.getID()) {
-					idx2--;
-				}
-				while(idx2<inp2.length && inp2[idx2].getID() < t.getID()) {
-					idx2++;
-				}
+				
 				long e = System.currentTimeMillis();
 				total += e-s;
+				
+				if(idx2<0) continue;
+				
 				idx=idx2;
 				if(idx<inp2.length && inp2[idx].getID() == t.getID()) {
-					thisBinId = t.getID(); 
+					thisBinId = t.getID();
 					startOfThisBin = idx;
 					while(idx<inp2.length && inp2[idx].getID() == t.getID()) {
 						ret.add(new Triple(t.getID(), t.getValue(), input2.get(idx).getValue()));
@@ -93,7 +113,7 @@ public class SortMergeJoin implements Join{
 				}
 			}
 		}
-		System.out.printf("percentage (binary_search_algo_time/total_search_time)=%f\n", 1.0f*inside/total);
+		System.out.printf("percentage time=%f\n", 1.0f*inside/total);
 		return ret;
 	}
 
