@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 interface Objectifier {
@@ -26,6 +27,15 @@ public class HashJoin implements Join {
 		}
 	    });
 	}
+	System.out.println("sizes: "+input1.size()+" "+input2.size());
+	int shift = (int)(Math.log(Math.sqrt(input1.size()*input2.size())));
+	shift = Math.min(shift, funobjs.size());
+	System.out.println("shift: "+shift);
+	Objectifier fun = funobjs.get(shift);
+	
+	ArrayList<LinkedList<Tuple> > buckets = new ArrayList();
+	buckets.ensureCapacity(1<<shift);
+	System.out.println(buckets);
 	return null;
     }
 
