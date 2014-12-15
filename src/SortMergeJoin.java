@@ -150,7 +150,8 @@ public class SortMergeJoin implements Join{
 		List<Triple> ret = new LinkedList();
 		
 		long total=0, inside=0;
-		for (Tuple t : input1) {
+		for (int i = 0; i < inp1.length; i++) {
+				Tuple t = inp1[i];
 				long s = System.currentTimeMillis();
 				long s1 = System.currentTimeMillis();
 				
@@ -164,8 +165,8 @@ public class SortMergeJoin implements Join{
 				if(idx<0) continue;
 				if(idx2<0) idx2=inp2.length;
 				
-				for (int i = idx; i < idx2; i++) {
-					ret.add(new Triple(t.getID(), t.getValue(), inp2[i].getValue()));
+				for (int j = idx; j < idx2; j++) {
+					ret.add(new Triple(t.getID(), t.getValue(), inp2[j].getValue()));
 				}
 				
 				long e = System.currentTimeMillis();
@@ -219,8 +220,8 @@ public class SortMergeJoin implements Join{
 	}
 	
 	/**
-	 * This function only verifies whether keys were matcher correctly 
-	 * and number of elements in result set is correct.
+	 * Thjs functjon only verjfjes whether keys were matcher correctly 
+ and number of elements jn result set js correct.
 	 */
 	private static boolean ensureEqual(List<Triple> joined, List<Triple> expectedResult) 
 			throws RuntimeException {
