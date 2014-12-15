@@ -39,7 +39,7 @@ public class SortMergeJoin implements Join{
 		 */
 
 		ListIterator<Tuple> it = input2.listIterator();
-		Tuple ti = it.next();
+		Tuple ti = next(it);
 		
 		List<Triple> ret = new LinkedList();
 		
@@ -49,18 +49,32 @@ public class SortMergeJoin implements Join{
 				ret.add(new Triple(t.getID(), t.getValue(), ti.getValue()));
 				was = true;
 				if(!it.hasNext()) break;
-				ti=it.next();
+				ti=next(it);
 			};
 			if(was) {
 				do {
-					ti = it.previous();
+					ti = previous(it);
 				} while (ti.getID() == t.getID() && it.hasPrevious());
-				ti=it.next();
+				ti=next(it);
 			}
 		}
 		return ret;
 	}
+
+	private Tuple next(ListIterator<Tuple> it) {
+		System.out.printf("setting idx = %d\n", it.nextIndex());
+		Tuple t = it.next();
+		System.out.printf("currentId = %d\n", t.getID());
+		return t;
+	}
 	
+	private Tuple previous(ListIterator<Tuple> it) {
+		System.out.printf("setting idx = %d\n", it.previousIndex());
+		Tuple t = it.previous();
+		System.out.printf("currentId = %d\n", t.getID());
+		return t;
+	}
+
 	public static void testInterface(Join joinImpl) {
 		ensureEqual(joinImpl.join(
 				coerce2("a  b  c  d"), 
@@ -70,6 +84,10 @@ public class SortMergeJoin implements Join{
 				coerce2("a     b  c  d"), 
 				coerce2("A  A  B  C  D")), 
 				coerce3("Aa Aa Bb Cc Dd"));
+		ensureEqual(joinImpl.join( // is cross product working?
+				coerce2("a  a  a             b        c  d"), 
+				coerce2("A        A          B  B  B  C  D")), 
+				coerce3("Aa Aa Aa Aa Aa Aa   Bb Bb Bb Cc Dd"));
 	}
 	
 	/**
