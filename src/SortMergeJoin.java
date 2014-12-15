@@ -30,9 +30,12 @@ public class SortMergeJoin implements Join{
 				return o1.getID()-o2.getID();
 			}
 		};
+
+		Tuple[] inp1 = input1.toArray(new Tuple[0]);
+		Tuple[] inp2 = input2.toArray(new Tuple[0]);
 		
-		java.util.Collections.sort(input1, cmp);
-		java.util.Collections.sort(input2, cmp);
+		java.util.Arrays.sort(inp1, cmp);
+		java.util.Arrays.sort(inp2, cmp);
 
 		/*
 		 * From now on there is following assumption: 
@@ -48,17 +51,17 @@ public class SortMergeJoin implements Join{
 			idx=0;
 			if(thisBinId == t.getID()) {
 				for (int i = startOfThisBin; i < endofThisBin; i++) {
-					ret.add(new Triple(t.getID(), t.getValue(), input2.get(i).getValue()));
+					ret.add(new Triple(t.getID(), t.getValue(), inp2[i].getValue()));
 				}
 			} else {
 				// Skip null joins at the beginning
-				while(idx<input2.size() && input2.get(idx).getID() < t.getID()) {
+				while(idx<inp2.length && inp2[idx].getID() < t.getID()) {
 					idx++;
 				}
-				if(idx<input2.size() && input2.get(idx).getID() == t.getID()) {
+				if(idx<inp2.length && inp2[idx].getID() == t.getID()) {
 					thisBinId = t.getID(); 
 					startOfThisBin = idx;
-					while(idx<input2.size() && input2.get(idx).getID() == t.getID()) {
+					while(idx<inp2.length && inp2[idx].getID() == t.getID()) {
 						ret.add(new Triple(t.getID(), t.getValue(), input2.get(idx).getValue()));
 						idx++;
 					}
