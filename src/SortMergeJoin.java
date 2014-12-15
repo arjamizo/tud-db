@@ -31,8 +31,13 @@ class PerfTest {
 }
 
 public class SortMergeJoin implements Join{
-	
+	static Comparator<Tuple> cmp;
 	static {
+		cmp = new Comparator<Tuple>() {
+			public int compare(Tuple o1, Tuple o2) {
+				return o1.getID()-o2.getID();
+			}
+		};
 		new PerfTest().addTest("finishing iteration by learning max size", new Runnable() {
 
 			List<String> list = Arrays.asList((new String(new char[10000]).replace("\0", "a")).split("a"));
@@ -121,12 +126,6 @@ public class SortMergeJoin implements Join{
 		if(input1.size() < 1e2)
 		System.out.printf("Joining: \n\t%s\n\t%s\n", input1, input2);
 		
-		final Comparator<Tuple> 
-		cmp = new Comparator<Tuple>() {
-			public int compare(Tuple o1, Tuple o2) {
-				return o1.getID()-o2.getID();
-			}
-		};
 		final Tuple inp1[], inp2[];
 		{
 		long start = System.currentTimeMillis();
@@ -168,7 +167,7 @@ public class SortMergeJoin implements Join{
 			}
 			
 			public void run() {
-			    List l = handleSubset(this.start, this.end, inp1, inp2, cmp);
+			    List l = handleSubset(this.start, this.end, inp1, inp2);
 			    ret.addAll(l);
 			}
 		    }.init(i, maxid));
@@ -183,10 +182,10 @@ public class SortMergeJoin implements Join{
 			Logger.getLogger(SortMergeJoin.class.getName()).log(Level.SEVERE, null, ex);
 		    }
 		}
-		return maxid>0 ? ret : handleSubset(start, end, inp1, inp2, cmp);
+		return maxid>0 ? ret : handleSubset(start, end, inp1, inp2);
 	}
 
-    private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2, Comparator<Tuple> cmp) {
+    private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
 	List<Triple> ret = new LinkedList();
 	long total=0, inside=0;
 	for (int i = start; i < end; i++) {
