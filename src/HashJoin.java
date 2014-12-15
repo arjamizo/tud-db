@@ -20,7 +20,7 @@ public class HashJoin implements Join {
     }
 
     public List<Triple> join(final List<Tuple> input1, final List<Tuple> input2) {
-	int size = 1 << 8;
+	int size = 1 << (8+1);
 	ArrayList<LinkedList<Tuple> > buckets1 = new ArrayList(size);
 	ArrayList<LinkedList<Tuple> > buckets2 = new ArrayList(size);
 	for (int i = 0; i < size; i++) {
@@ -31,7 +31,7 @@ public class HashJoin implements Join {
 	for (int i = 0; i < input1.size(); i++) {
 	    t = input1.get(i);
 	    int hash = hash(t.getID());
-	    System.out.printf("id=%d\thash=%d\n", t.getID(), hash);
+//	    System.out.printf("id=%d\thash=%d\n", t.getID(), hash);
 	    buckets1.get(hash).add(t);
 	}
 	
@@ -40,7 +40,14 @@ public class HashJoin implements Join {
 	    int hash = hash(t.getID());
 	    buckets2.get(hash).add(t);
 	}
-	return null;
+	
+	LinkedList<Triple> ret = new LinkedList();
+	for (int i = 0; i < buckets1.size(); i++) {
+	    LinkedList<Tuple> inp1 = buckets1.get(i);
+	    LinkedList<Tuple> inp2 = buckets2.get(i);
+	    ret.addAll(new SortMergeJoin().join(inp1, inp2));
+	}
+	return ret;
     }
 
 }
