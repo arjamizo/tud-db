@@ -30,12 +30,23 @@ public class SortMergeJoin implements Join{
 				return o1.getID()-o2.getID();
 			}
 		};
+				
+		Tuple[] inp1, inp2;
+		{
+		long start = System.currentTimeMillis();
+		inp1 = input1.toArray(new Tuple[0]);
+		inp2 = input2.toArray(new Tuple[0]);
+		long end = System.currentTimeMillis();
+		System.out.printf("time conv=%d\n", end-start);
+		}
 
-		Tuple[] inp1 = input1.toArray(new Tuple[0]);
-		Tuple[] inp2 = input2.toArray(new Tuple[0]);
-		
+		{
+		long start = System.currentTimeMillis();
 		java.util.Arrays.sort(inp1, cmp);
 		java.util.Arrays.sort(inp2, cmp);
+		long end = System.currentTimeMillis();
+		System.out.printf("time sort=%d\n", end-start);
+		}
 
 		/*
 		 * From now on there is following assumption: 
