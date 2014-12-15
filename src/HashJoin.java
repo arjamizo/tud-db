@@ -17,7 +17,7 @@ public class HashJoin implements Join {
 
     public List<Triple> join(final List<Tuple> input1, final List<Tuple> input2) {
 	ArrayList<Objectifier> funobjs = new java.util.ArrayList();
-	for (int i = 1; i <= 16; i++) {
+	for (int i = 0; i < 16; i++) {
 	    funobjs.add(new Objectifier() {
 		int shift;
 		public Objectifier init(int shift) {
@@ -31,14 +31,15 @@ public class HashJoin implements Join {
 	}
 	System.out.println("sizes: "+input1.size()+" "+input2.size());
 	int shift = (int)(Math.log10(Math.sqrt(input1.size()*input2.size())));
-	shift = Math.min(shift, funobjs.size());
 	
 	Comparator <Tuple> cmp = new Comparator<Tuple>() {
 		public int compare(Tuple o1, Tuple o2) {
 			return o1.getID()-o2.getID();
 		}
 	};
-	shift = (int)Math.log10(Collections.max(input1, cmp).getID()-Collections.min(input1, cmp).getID());
+	shift = (int)Math.log((Collections.max(input1, cmp).getID()-Collections.min(input1, cmp).getID()));
+//	shift *= Math.log10(input1.size()*input2.size());
+	shift = Math.min(shift, funobjs.size()-1);
 	System.out.println("shift: "+shift);
 	
 	Objectifier fun = funobjs.get(shift);
