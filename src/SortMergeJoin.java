@@ -5,15 +5,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SortMergeJoin implements Join{
+	
+	static {
+		System.out.println("<testing-framework>");
+		testInterface(new SortMergeJoin());
+		System.out.println("</testing-framework>");
+	}
 
 	public String getName() {
 		return "Sort Merge Join";
 	}
 	
 	public SortMergeJoin() {
-		System.out.println("<testing-framework>");
-		testInterface(this);
-		System.out.println("</testing-framework>");
 	}
 	
 	public List<Triple> join(List<Tuple> input1, List<Tuple> input2) {
@@ -25,7 +28,7 @@ public class SortMergeJoin implements Join{
 		return ret;
 	}
 	
-	public void testInterface(Join joinImpl) {
+	public static void testInterface(Join joinImpl) {
 		ensureEqual(joinImpl.join(
 				coerce2("a  b  c  d"), 
 				coerce2("A  B  C  D")), 
@@ -36,7 +39,7 @@ public class SortMergeJoin implements Join{
 	 * This function only verifies whether keys were matcher correctly 
 	 * and number of elements in result set is correct.
 	 */
-	private boolean ensureEqual(List<Triple> joined, List<Triple> expectedResult) 
+	private static boolean ensureEqual(List<Triple> joined, List<Triple> expectedResult) 
 			throws RuntimeException {
 		Iterator<Triple> it = expectedResult.listIterator();
 		System.out.println(joined);
@@ -53,7 +56,7 @@ public class SortMergeJoin implements Join{
 		return true;
 	}
 
-	private List<Tuple> coerce2(String input) {
+	private static List<Tuple> coerce2(String input) {
 		LinkedList<Tuple> list = new LinkedList();
 		String[] split = input.split("\\W+");
 		for (String chr : split) {
@@ -63,7 +66,7 @@ public class SortMergeJoin implements Join{
 		return list;
 	}
 	
-	private List<Triple> coerce3(String input) {
+	private static List<Triple> coerce3(String input) {
 		LinkedList<Triple> list = new LinkedList();
 		String[] split = input.split("\\W+");
 		for (String chr : split) {
