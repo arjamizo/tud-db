@@ -3,6 +3,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class SortMergeJoin implements Join{
 	
@@ -21,9 +22,41 @@ public class SortMergeJoin implements Join{
 	
 	public List<Triple> join(List<Tuple> input1, List<Tuple> input2) {
 		System.out.printf("Joining: \n\t%s\n\t%s\n", input1, input2);
+
+		Comparator<Tuple> cmp = null;
+		cmp = new Comparator<Tuple>() {
+			public int compare(Tuple o1, Tuple o2) {
+				return o1.getID()-o2.getID();
+			}
+		};
+		
+		java.util.Collections.sort(input1, cmp);
+		java.util.Collections.sort(input2, cmp);
+
+		/*
+		 * From now on there is following assumption: 
+		 * lists are sorted. 
+		 */
+
+		ListIterator<Tuple> it = input2.listIterator();
+		Tuple ti = it.next();
+		
 		List<Triple> ret = new LinkedList();
+		
 		for (Tuple t : input1) {
-			ret.add(new Triple(0, 0, 0));
+			boolean was = false;
+			while (ti.getID() == t.getID()) {
+				ret.add(new Triple(t.getID(), t.getValue(), ti.getValue()));
+				was = true;
+				if(!it.hasNext()) break;
+				ti=it.next();
+			};
+			if(was) {
+				do {
+					ti = it.previous();
+				} while (ti.getID() == t.getID() && it.hasPrevious());
+				ti=it.next();
+			}
 		}
 		return ret;
 	}
@@ -33,6 +66,10 @@ public class SortMergeJoin implements Join{
 				coerce2("a  b  c  d"), 
 				coerce2("A  B  C  D")), 
 				coerce3("Aa Bb Cc Dd"));
+		ensureEqual(joinImpl.join( // checks whether multiple occurences are handler correctly
+				coerce2("a     b  c  d"), 
+				coerce2("A  A  B  C  D")), 
+				coerce3("Aa Aa Bb Cc Dd"));
 	}
 	
 	/**
@@ -42,10 +79,9 @@ public class SortMergeJoin implements Join{
 	private static boolean ensureEqual(List<Triple> joined, List<Triple> expectedResult) 
 			throws RuntimeException {
 		Iterator<Triple> it = expectedResult.listIterator();
-		System.out.println(joined);
-		System.out.println(expectedResult);
+		System.out.printf("Got:\n\t%s\n\tand was expecting:\n\t%s\n\n", joined, expectedResult);
 		if(joined.size() != expectedResult.size()) 
-			throw new RuntimeException("size is not equal");
+			throw new RuntimeException("size is not equal "+Integer.toString(joined.size()) + " vs "+Integer.toString(expectedResult.size()));
 		for (Triple triple : joined) {
 			if(!it.hasNext()) return false;
 			int id = it.next().getID();

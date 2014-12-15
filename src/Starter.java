@@ -65,6 +65,7 @@ public class Starter {
 			else {
 			System.out.println("Size:     " + result.size());
 			System.out.println("Time(ms): " + times[i]);
+			if(times[i]!=0)
 			System.out.println("Speedup : " + (times[0]/times[i]) + " x");
 			}
 			
