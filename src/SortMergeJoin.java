@@ -38,6 +38,7 @@ public class SortMergeJoin implements Join{
 				return o1.getID()-o2.getID();
 			}
 		};
+		/*
 		new PerfTest().addTest("finishing iteration by learning max size", new Runnable() {
 
 			List<String> list = Arrays.asList((new String(new char[10000]).replace("\0", "a")).split("a"));
@@ -64,9 +65,11 @@ public class SortMergeJoin implements Join{
 				}
 			}
 		}).perform();
-		
+		*/
 		System.out.println("<testing-framework>");
+		/*
 		testInterface(new SortMergeJoin());
+		*/
 		System.out.println("</testing-framework>");
 	}
 

@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -46,6 +47,21 @@ public class HashJoin implements Join {
 	    LinkedList<Tuple> inp1 = buckets1.get(i);
 	    LinkedList<Tuple> inp2 = buckets2.get(i);
 	    ret.addAll(new SortMergeJoin().join(inp1, inp2));
+//	    ret.addAll(joinNormal(inp1, inp2));
+	}
+	return ret;
+    }
+
+    private List<Triple> joinNormal(LinkedList<Tuple> inp1, LinkedList<Tuple> inp2) {
+	List<Triple> ret = new LinkedList();
+	for (int i = 0; i < inp1.size(); i++) {
+	    Tuple t1 = inp1.get(i);
+	    	for (int j = 0; j < inp2.size(); j++) {
+		Tuple t2 = inp2.get(j);
+		if(t1.getID() == t2.getID()) {
+		    ret.add(new Triple(t1.getID(), t1.getValue(), t2.getValue()));
+		}
+	    }
 	}
 	return ret;
     }

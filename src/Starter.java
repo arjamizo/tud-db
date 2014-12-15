@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 public class Starter {
-
 	
 	public static List<Tuple> cloneList(List<Tuple> list) {
 	    List<Tuple> clone = new ArrayList<Tuple>(list.size());
@@ -42,8 +41,11 @@ public class Starter {
 		
 		long start, stop;
 		
+		System.out.println("Using "+cores + " cores.");
+		
 		List<Join> joins = new ArrayList<Join>();
 		joins.add(new NestedLoopJoin());
+//		joins.add(new SortMergeJoin());
 		joins.add(new SortMergeJoin(cores));
 		joins.add(new HashJoin());
 		
