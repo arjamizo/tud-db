@@ -183,7 +183,7 @@ public class SortMergeJoin implements Join{
 			Logger.getLogger(SortMergeJoin.class.getName()).log(Level.SEVERE, null, ex);
 		    }
 		}
-		return ret;
+		return maxid>0 ? ret : handleSubset(start, end, inp1, inp2, cmp);
 	}
 
     private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2, Comparator<Tuple> cmp) {
