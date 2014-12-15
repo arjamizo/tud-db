@@ -69,6 +69,28 @@ public class SortMergeJoin implements Join{
 	public SortMergeJoin() {
 	}
 
+	public static <T> int upper_bound(T[] arr, T key, Comparator<T> c) {
+	    int len = arr.length;
+	    int lo = 0;
+	    int hi = len - 1;
+	    int mid = (lo + hi) / 2;
+	    while (true) {
+		int cmp = c.compare(arr[mid], key);
+		if (cmp == 0 || cmp < 0) {
+		    lo = mid + 1;
+		    if (hi < lo) {
+			return mid < len - 1 ? mid + 1 : -1;
+		    }
+		} else {
+		    hi = mid - 1;
+		    if (hi < lo) {
+			return mid;
+		    }
+		}
+		mid = (lo + hi) / 2;
+	    }
+	}
+	
 	public static <T> int lower_bound(T[] arr, T key, Comparator<T> c) {
 	    int len = arr.length;
 	    int lo = 0;
@@ -127,41 +149,27 @@ public class SortMergeJoin implements Join{
 		
 		List<Triple> ret = new LinkedList();
 		
-		int startOfThisBin = -1, endofThisBin = -1;
-		int idx = 0;
-		int thisBinId = -1;
 		long total=0, inside=0;
 		for (Tuple t : input1) {
-			idx=0;
-			if(thisBinId == t.getID()) {
-				for (int i = startOfThisBin; i < endofThisBin; i++) {
-					ret.add(new Triple(t.getID(), t.getValue(), inp2[i].getValue()));
-				}
-			} else {
 				long s = System.currentTimeMillis();
 				long s1 = System.currentTimeMillis();
 				
-				int idx2 = lower_bound(inp2, new Tuple(t.getID(), 0), cmp);
+				Tuple tu = new Tuple(t.getID(), 0);
+				int idx = lower_bound(inp2, tu, cmp);
+				int idx2 = upper_bound(inp2, tu, cmp);
 				
 				long e1 = System.currentTimeMillis();
 				inside += e1-s1;
 				
+				if(idx<0) continue;
+				if(idx2<0) idx2=inp2.length;
+				
+				for (int i = idx; i < idx2; i++) {
+					ret.add(new Triple(t.getID(), t.getValue(), inp2[i].getValue()));
+				}
+				
 				long e = System.currentTimeMillis();
 				total += e-s;
-				
-				if(idx2<0) continue;
-				
-				idx=idx2;
-				if(idx<inp2.length && inp2[idx].getID() == t.getID()) {
-					thisBinId = t.getID();
-					startOfThisBin = idx;
-					while(idx<inp2.length && inp2[idx].getID() == t.getID()) {
-						ret.add(new Triple(t.getID(), t.getValue(), input2.get(idx).getValue()));
-						idx++;
-					}
-					endofThisBin = idx;
-				}
-			}
 		}
 		System.out.printf("percentage time=%f\n", 1.0f*inside/total);
 		return ret;
