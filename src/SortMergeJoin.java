@@ -1,8 +1,11 @@
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class PerfTest {
 	java.util.ArrayList<Runnable> tests = new java.util.ArrayList();
@@ -117,15 +120,14 @@ public class SortMergeJoin implements Join{
 	public List<Triple> join(List<Tuple> input1, List<Tuple> input2) {
 		if(input1.size() < 1e2)
 		System.out.printf("Joining: \n\t%s\n\t%s\n", input1, input2);
-
-		Comparator<Tuple> cmp = null;
+		
+		final Comparator<Tuple> 
 		cmp = new Comparator<Tuple>() {
 			public int compare(Tuple o1, Tuple o2) {
 				return o1.getID()-o2.getID();
 			}
 		};
-				
-		Tuple[] inp1, inp2;
+		final Tuple inp1[], inp2[];
 		{
 		long start = System.currentTimeMillis();
 		inp1 = input1.toArray(new Tuple[0]);
@@ -147,12 +149,33 @@ public class SortMergeJoin implements Join{
 		 * lists are sorted. 
 		 */
 		
-		int start = 0, end = inp1.length;
+		final int start = 0, end = inp1.length;
 		
-		return handleSubset(start, end, inp1, inp2);
+		final List<Triple> ret = Collections.synchronizedList(new LinkedList<Triple>());
+		
+		List<Thread> threads = new LinkedList();
+		for (int i = 0; i < 4; i++) {
+		    Thread thread = new Thread(new Runnable() {
+			
+			public void run() {
+			    ret.addAll(handleSubset(start, end, inp1, inp2, cmp));
+			}
+		    });
+		    threads.add(thread);
+		    thread.start();
+		}
+		
+		for (Thread thread : threads) {
+		    try {
+			thread.join();
+		    } catch (InterruptedException ex) {
+			Logger.getLogger(SortMergeJoin.class.getName()).log(Level.SEVERE, null, ex);
+		    }
+		}
+		return ret;
 	}
 
-    private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
+    private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2, Comparator<Tuple> cmp) {
 	List<Triple> ret = new LinkedList();
 	long total=0, inside=0;
 	for (int i = start; i < end; i++) {
