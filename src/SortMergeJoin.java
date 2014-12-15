@@ -41,19 +41,28 @@ public class SortMergeJoin implements Join{
 		
 		List<Triple> ret = new LinkedList();
 		
+		int startOfThisBin = -1, endofThisBin = -1;
 		int idx = 0;
+		int thisBinId = -1;
 		for (Tuple t : input1) {
-			{
-				idx = 0;
+			idx=0;
+			if(thisBinId == t.getID()) {
+				for (int i = startOfThisBin; i < endofThisBin; i++) {
+					ret.add(new Triple(t.getID(), t.getValue(), input2.get(i).getValue()));
+				}
+			} else {
 				// Skip null joins at the beginning
 				while(idx<input2.size() && input2.get(idx).getID() < t.getID()) {
 					idx++;
 				}
 				if(idx<input2.size() && input2.get(idx).getID() == t.getID()) {
+					thisBinId = t.getID(); 
+					startOfThisBin = idx;
 					while(idx<input2.size() && input2.get(idx).getID() == t.getID()) {
 						ret.add(new Triple(t.getID(), t.getValue(), input2.get(idx).getValue()));
 						idx++;
 					}
+					endofThisBin = idx;
 				}
 			}
 		}
