@@ -43,7 +43,7 @@ public class Starter {
 		long start, stop;
 		
 		List<Join> joins = new ArrayList<Join>();
-		joins.add(new NestedLoopJoin());
+//		joins.add(new NestedLoopJoin());
 		joins.add(new SortMergeJoin(cores));
 		joins.add(new HashJoin());
 		
