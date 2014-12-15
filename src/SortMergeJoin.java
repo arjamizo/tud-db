@@ -21,6 +21,7 @@ public class SortMergeJoin implements Join{
 	}
 	
 	public List<Triple> join(List<Tuple> input1, List<Tuple> input2) {
+		if(input1.size() < 1e2)
 		System.out.printf("Joining: \n\t%s\n\t%s\n", input1, input2);
 
 		Comparator<Tuple> cmp = null;
@@ -37,42 +38,26 @@ public class SortMergeJoin implements Join{
 		 * From now on there is following assumption: 
 		 * lists are sorted. 
 		 */
-
-		ListIterator<Tuple> it = input2.listIterator();
-		Tuple ti = next(it);
 		
 		List<Triple> ret = new LinkedList();
 		
 		for (Tuple t : input1) {
-			boolean was = false;
-			while (ti.getID() == t.getID()) {
-				ret.add(new Triple(t.getID(), t.getValue(), ti.getValue()));
-				was = true;
-				if(!it.hasNext()) break;
-				ti=next(it);
-			};
-			if(was) {
-				do {
-					ti = previous(it);
-				} while (ti.getID() == t.getID() && it.hasPrevious());
-				ti=next(it);
+			int idx = -1;
+			for (Tuple t2 : input2) {
+				if (cmp.compare(t, t2)==0) {
+					idx = input2.indexOf(t2);
+					break;
+				}
+			}
+			if(idx!=-1) {
+				while(input2.get(idx).getID() == t.getID()) {
+					ret.add(new Triple(t.getID(), t.getValue(), input2.get(idx).getValue()));
+					if(idx+1 >= input2.size()) break;
+					idx++;
+				}
 			}
 		}
 		return ret;
-	}
-
-	private Tuple next(ListIterator<Tuple> it) {
-		System.out.printf("setting idx = %d\n", it.nextIndex());
-		Tuple t = it.next();
-		System.out.printf("currentId = %d\n", t.getID());
-		return t;
-	}
-	
-	private Tuple previous(ListIterator<Tuple> it) {
-		System.out.printf("setting idx = %d\n", it.previousIndex());
-		Tuple t = it.previous();
-		System.out.printf("currentId = %d\n", t.getID());
-		return t;
 	}
 
 	public static void testInterface(Join joinImpl) {
