@@ -147,34 +147,39 @@ public class SortMergeJoin implements Join{
 		 * lists are sorted. 
 		 */
 		
-		List<Triple> ret = new LinkedList();
+		int start = 0, end = inp1.length;
 		
-		long total=0, inside=0;
-		for (int i = 0; i < inp1.length; i++) {
-				Tuple t = inp1[i];
-				long s = System.currentTimeMillis();
-				long s1 = System.currentTimeMillis();
-				
-				Tuple tu = new Tuple(t.getID(), 0);
-				int idx = lower_bound(inp2, tu, cmp);
-				int idx2 = upper_bound(inp2, tu, cmp);
-				
-				long e1 = System.currentTimeMillis();
-				inside += e1-s1;
-				
-				if(idx<0) continue;
-				if(idx2<0) idx2=inp2.length;
-				
-				for (int j = idx; j < idx2; j++) {
-					ret.add(new Triple(t.getID(), t.getValue(), inp2[j].getValue()));
-				}
-				
-				long e = System.currentTimeMillis();
-				total += e-s;
-		}
-		System.out.printf("percentage time=%f\n", 1.0f*inside/total);
-		return ret;
+		return handleSubset(start, end, inp1, inp2);
 	}
+
+    private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
+	List<Triple> ret = new LinkedList();
+	long total=0, inside=0;
+	for (int i = start; i < end; i++) {
+	    Tuple t = inp1[i];
+	    long s = System.currentTimeMillis();
+	    long s1 = System.currentTimeMillis();
+	    
+	    Tuple tu = new Tuple(t.getID(), 0);
+	    int idx = lower_bound(inp2, tu, cmp);
+	    int idx2 = upper_bound(inp2, tu, cmp);
+	    
+	    long e1 = System.currentTimeMillis();
+	    inside += e1-s1;
+	    
+	    if(idx<0) continue;
+	    if(idx2<0) idx2=inp2.length;
+	    
+	    for (int j = idx; j < idx2; j++) {
+		ret.add(new Triple(t.getID(), t.getValue(), inp2[j].getValue()));
+	    }
+	    
+	    long e = System.currentTimeMillis();
+	    total += e-s;
+	}
+	System.out.printf("percentage time=%f\n", 1.0f*inside/total);
+	return ret;
+    }
 
 	public static void testInterface(Join joinImpl) {
 		ensureEqual(joinImpl.join(
