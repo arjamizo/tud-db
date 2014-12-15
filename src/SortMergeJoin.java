@@ -58,12 +58,17 @@ public class SortMergeJoin implements Join{
 		int startOfThisBin = -1, endofThisBin = -1;
 		int idx = 0;
 		int thisBinId = -1;
+		long total=0, inside=0;
 		for (Tuple t : input1) {
 			idx=0;
+			long s = System.currentTimeMillis();
 			if(thisBinId == t.getID()) {
+				long s1 = System.currentTimeMillis();
 				for (int i = startOfThisBin; i < endofThisBin; i++) {
 					ret.add(new Triple(t.getID(), t.getValue(), inp2[i].getValue()));
 				}
+				long e1 = System.currentTimeMillis();
+				inside += e1-s1;
 			} else {
 				// Skip null joins at the beginning
 				while(idx<inp2.length && inp2[idx].getID() < t.getID()) {
@@ -79,7 +84,10 @@ public class SortMergeJoin implements Join{
 					endofThisBin = idx;
 				}
 			}
+			long e = System.currentTimeMillis();
+			total += e-s;
 		}
+		System.out.printf("percentage=%f", 1.0f*inside/total);
 		return ret;
 	}
 
