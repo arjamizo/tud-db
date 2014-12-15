@@ -46,7 +46,7 @@ public class HashJoin implements Join {
 	for (int i = 0; i < buckets1.size(); i++) {
 	    LinkedList<Tuple> inp1 = buckets1.get(i);
 	    LinkedList<Tuple> inp2 = buckets2.get(i);
-	    ret.addAll(new SortMergeJoin().join(inp1, inp2));
+	    ret.addAll(new SortMergeJoin(0).join(inp1, inp2));
 //	    ret.addAll(joinNormal(inp1, inp2));
 	}
 	return ret;

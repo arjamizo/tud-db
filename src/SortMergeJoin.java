@@ -83,7 +83,11 @@ public class SortMergeJoin implements Join{
 	}
 	
 	public SortMergeJoin() {
-	    this.cores = 0;
+	    try {
+		this.cores = Runtime.getRuntime().availableProcessors();
+	    } catch (Throwable e) {
+		this.cores = 0;
+	    }
 	}
 
 	public static <T> int upper_bound(T[] arr, T key, Comparator<T> c) {
@@ -194,7 +198,7 @@ public class SortMergeJoin implements Join{
 		return maxid>0 ? ret : handleSubset(start, end, inp1, inp2);
 	}
 
-    private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
+    public List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
 	List<Triple> ret = new LinkedList();
 	long total=0, inside=0;
 	for (int i = start; i < end; i++) {
