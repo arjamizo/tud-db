@@ -154,14 +154,24 @@ public class SortMergeJoin implements Join{
 		final List<Triple> ret = Collections.synchronizedList(new LinkedList<Triple>());
 		
 		List<Thread> threads = Collections.synchronizedList(new LinkedList());
-		for (int i = 0; i < 10; i++) {
+		int maxid = 4;
+		for (int i = 0; i < maxid; i++) {
 		    Thread thread = new Thread(new Runnable() {
 			
+			int start, end;
+			
+			public Runnable init(int id,  int maxid) {
+			    start = (int)Math.floor(inp1.length*id/maxid);
+			    end = (int)Math.floor(inp1.length*(id+1)/maxid);
+			    System.out.println("Thread: "+start+".."+end);
+			    return this;
+			}
+			
 			public void run() {
-			    List l = handleSubset(start, end, inp1, inp2, cmp);
+			    List l = handleSubset(this.start, this.end, inp1, inp2, cmp);
 			    ret.addAll(l);
 			}
-		    });
+		    }.init(i, maxid));
 		    threads.add(thread);
 		    thread.start();
 		}
