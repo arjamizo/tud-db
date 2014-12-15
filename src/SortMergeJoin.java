@@ -73,6 +73,18 @@ public class SortMergeJoin implements Join{
 				coerce2("a  a  a             b        c  d"), 
 				coerce2("A        A          B  B  B  C  D")), 
 				coerce3("Aa Aa Aa Aa Aa Aa   Bb Bb Bb Cc Dd"));
+		ensureEqual(joinImpl.join( // some more sophisticated cross product
+				coerce2("a  a  a                    b  b  b           c       e e"), 
+				coerce2("A        A        A        B  B              C       E")), 
+				coerce3("Aa Aa Aa Aa Aa Aa Aa Aa Aa Bb Bb Bb Bb Bb Bb Cc      Ee Ee"));
+		ensureEqual(joinImpl.join( // what if left null join?
+				coerce2("a  b"), 
+				coerce2("A  B  C")), 
+				coerce3("Aa Bb"));
+		ensureEqual(joinImpl.join( // what if right null join?
+				coerce2("a  b  c"), 
+				coerce2("A  B")), 
+				coerce3("Aa Bb"));
 	}
 	
 	/**
