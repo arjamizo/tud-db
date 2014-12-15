@@ -69,12 +69,9 @@ public class SortMergeJoin implements Join{
 				long s = System.currentTimeMillis();
 				long s1 = System.currentTimeMillis();
 				// Skip null joins at the beginning
-				while(idx<inp2.length && inp2[idx].getID() < t.getID()) {
-					idx++;
-				}
+				int idx2 = Arrays.binarySearch(inp2, new Tuple(t.getID(), 0), cmp);
 				long e1 = System.currentTimeMillis();
 				inside += e1-s1;
-				int idx2 = Arrays.binarySearch(inp2, new Tuple(t.getID(), 0), cmp);
 				if(idx2<0) continue;
 				while(idx2>0 && inp2[idx2].getID() >= t.getID()) {
 					idx2--;
@@ -82,10 +79,9 @@ public class SortMergeJoin implements Join{
 				while(idx2<inp2.length && inp2[idx2].getID() < t.getID()) {
 					idx2++;
 				}
-				idx=idx2;
-				// System.out.printf("idx=%d idx2=%d\n", idx, idx2);
 				long e = System.currentTimeMillis();
 				total += e-s;
+				idx=idx2;
 				if(idx<inp2.length && inp2[idx].getID() == t.getID()) {
 					thisBinId = t.getID(); 
 					startOfThisBin = idx;
@@ -97,7 +93,7 @@ public class SortMergeJoin implements Join{
 				}
 			}
 		}
-		System.out.printf("percentage=%f", 1.0f*inside/total);
+		System.out.printf("percentage (binary_search_algo_time/total_search_time)=%f\n", 1.0f*inside/total);
 		return ret;
 	}
 
