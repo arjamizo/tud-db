@@ -19,11 +19,15 @@ public class Starter {
 		
 		int size = 1000;
 		int distinctValues = 10000;
+		int cores = 0;
 		
 		//no changes from here on
-		if (args.length == 2) {
+		if (args.length >= 2) {
 			size = Integer.parseInt(args[0]);
 			distinctValues = Integer.parseInt(args[1]);
+		}
+		if(args.length >= 3) {
+		    cores = Integer.parseInt(args[2]);
 		}
 		
 		List<Tuple> input1 = new ArrayList<Tuple>();
@@ -40,7 +44,7 @@ public class Starter {
 		
 		List<Join> joins = new ArrayList<Join>();
 		joins.add(new NestedLoopJoin());
-		joins.add(new SortMergeJoin());
+		joins.add(new SortMergeJoin(cores));
 		joins.add(new HashJoin());
 		
 		long[] times = new long[joins.size()];

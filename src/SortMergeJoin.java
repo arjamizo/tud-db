@@ -74,7 +74,13 @@ public class SortMergeJoin implements Join{
 		return "Sort Merge Join";
 	}
 	
+	int cores = 0;
+	public SortMergeJoin(int cores) {
+	    this.cores = cores;
+	}
+	
 	public SortMergeJoin() {
+	    this.cores = 0;
 	}
 
 	public static <T> int upper_bound(T[] arr, T key, Comparator<T> c) {
@@ -153,7 +159,7 @@ public class SortMergeJoin implements Join{
 		final List<Triple> ret = Collections.synchronizedList(new LinkedList<Triple>());
 		
 		List<Thread> threads = Collections.synchronizedList(new LinkedList());
-		int maxid = 4;
+		int maxid = this.cores;
 		for (int i = 0; i < maxid; i++) {
 		    Thread thread = new Thread(new Runnable() {
 			
