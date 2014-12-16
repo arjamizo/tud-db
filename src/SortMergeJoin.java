@@ -196,14 +196,19 @@ public class SortMergeJoin implements Join{
     private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
 	List<Triple> ret = new LinkedList();
 	long total=0, inside=0;
+	int prevId = -1;
+	int idx = -1, idx2 = -1;
 	for (int i = start; i < end; i++) {
-	    Tuple t = inp1[i];
-	    long s = System.currentTimeMillis();
-	    long s1 = System.currentTimeMillis();
-	    
-	    Tuple tu = new Tuple(t.getID(), 0);
-	    int idx = lower_bound(inp2, tu, cmp, 0, -1);
-	    int idx2 = upper_bound(inp2, tu, cmp, 0, -1);
+		Tuple t = inp1[i];
+		long s = System.currentTimeMillis();
+		long s1 = System.currentTimeMillis();
+
+		if(prevId != t.getID()) 
+		{
+			Tuple tu = new Tuple(t.getID(), 0);
+			idx = lower_bound(inp2, tu, cmp, 0, -1);
+			idx2 = upper_bound(inp2, tu, cmp, 0, -1);
+		}
 	    
 	    long e1 = System.currentTimeMillis();
 	    inside += e1-s1;
