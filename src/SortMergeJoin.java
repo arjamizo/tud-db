@@ -173,6 +173,7 @@ public class SortMergeJoin implements Join{
 		int maxid = 0; 
 		if(this.cores==-1) {
 			maxid=input1.size() * input2.size() >= 5e5 ? Runtime.getRuntime().availableProcessors() : 0;
+//			maxid = Runtime.getRuntime().availableProcessors();
 		}
 		for (int i = 0; i < maxid; i++) {
 		    Thread thread = new Thread(new Runnable() {

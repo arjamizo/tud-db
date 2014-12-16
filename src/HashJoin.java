@@ -15,6 +15,15 @@ public class HashJoin implements Join {
     public String getName() {
 	return "Hash Join";
     }
+
+	int cores = 0;
+	public HashJoin() {
+		this.cores = -1;
+	}
+	
+	public HashJoin(int cores) {
+		this.cores = cores;
+	}
     
     public static int hash(int id) {
 	return id >>> 8;
@@ -52,7 +61,11 @@ public class HashJoin implements Join {
 		}
 	}.run();
 	
-	int maxid = input1.size()*input2.size()>5e5 ? Runtime.getRuntime().availableProcessors() : 0;
+	int maxid = 0; 
+	if(this.cores == -1) {
+		maxid = input1.size()*input2.size()>5e10 ? Runtime.getRuntime().availableProcessors() : 0;
+//		maxid = Runtime.getRuntime().availableProcessors();
+	}
 	Thread[] threads = new Thread[maxid];
 	
 	for (int i = 0; i < maxid; i++) {
