@@ -41,8 +41,9 @@ public class Starter {
 		
 		List<Join> joins = new ArrayList<Join>();
 		joins.add(new NestedLoopJoin());
-		joins.add(new SortMergeJoin());
+//		joins.add(new SortMergeJoin(4));
 		joins.add(new HashJoin());
+		joins.add(new SortMergeJoin(-1));
 		
 		long[] times = new long[joins.size()];
 		
@@ -67,7 +68,7 @@ public class Starter {
 			System.out.println("Size:     " + result.size());
 			System.out.println("Time(ms): " + times[i]);
 			if(times[i]!=0)
-			System.out.println("Speedup : " + (times[0]/times[i]) + " x");
+			System.out.println("Speedup : " + (float)(1.0*times[0]/times[i]) + " x");
 			}
 			
 			System.out.println("");

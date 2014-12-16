@@ -30,6 +30,12 @@ class PerfTest {
 	}
 }
 
+/**
+ * new SortMergeJoin(0) - run without threads
+ * new SortMergeJoin(N) - N>0 - run on N threads
+ * new SortMergeJoin(-1)- automatically run on all available threads if more than cross-product possibilities. 
+ * @author azochniak
+ */
 public class SortMergeJoin implements Join{
 	static Comparator<Tuple> cmp;
 	static {
@@ -83,11 +89,7 @@ public class SortMergeJoin implements Join{
 	}
 	
 	public SortMergeJoin() {
-	    try {
-		this.cores = Runtime.getRuntime().availableProcessors();
-	    } catch (Throwable e) {
-		this.cores = 0;
-	    }
+		this.cores = -1;
 	}
 
 	public static <T> int upper_bound(T[] arr, T key, Comparator<T> c, int from, int to) {
@@ -168,7 +170,10 @@ public class SortMergeJoin implements Join{
 		final List<Triple> ret = Collections.synchronizedList(new LinkedList<Triple>());
 		
 		List<Thread> threads = Collections.synchronizedList(new LinkedList());
-		int maxid = this.cores;
+		int maxid = 0; 
+		if(this.cores==-1) {
+			maxid=input1.size() * input2.size() >= 5e5 ? this.cores : 0;
+		}
 		for (int i = 0; i < maxid; i++) {
 		    Thread thread = new Thread(new Runnable() {
 			
