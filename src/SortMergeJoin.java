@@ -83,9 +83,10 @@ public class SortMergeJoin implements Join{
 	    this.cores = 0;
 	}
 
-	public static <T> int upper_bound(T[] arr, T key, Comparator<T> c) {
-	    int len = arr.length;
-	    int lo = 0;
+	public static <T> int upper_bound(T[] arr, T key, Comparator<T> c, int from, int to) {
+	    int len = to;
+	    if(to==-1) len = arr.length;
+	    int lo = from;
 	    int hi = len - 1;
 	    int mid = (lo + hi) / 2;
 	    while (true) {
@@ -105,9 +106,10 @@ public class SortMergeJoin implements Join{
 	    }
 	}
 	
-	public static <T> int lower_bound(T[] arr, T key, Comparator<T> c) {
-	    int len = arr.length;
-	    int lo = 0;
+	public static <T> int lower_bound(T[] arr, T key, Comparator<T> c, int from, int to) {
+	    int len = to;
+	    if(to==-1) len = arr.length;
+	    int lo = from;
 	    int hi = len - 1;
 	    int mid; 
 	    mid = (lo + hi) / 2;
@@ -200,8 +202,8 @@ public class SortMergeJoin implements Join{
 	    long s1 = System.currentTimeMillis();
 	    
 	    Tuple tu = new Tuple(t.getID(), 0);
-	    int idx = lower_bound(inp2, tu, cmp);
-	    int idx2 = upper_bound(inp2, tu, cmp);
+	    int idx = lower_bound(inp2, tu, cmp, 0, -1);
+	    int idx2 = upper_bound(inp2, tu, cmp, 0, -1);
 	    
 	    long e1 = System.currentTimeMillis();
 	    inside += e1-s1;
