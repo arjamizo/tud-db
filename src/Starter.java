@@ -43,7 +43,7 @@ public class Starter {
 		joins.add(new NestedLoopJoin());
 //		joins.add(new SortMergeJoin(4));
 		joins.add(new HashJoin());
-		joins.add(new SortMergeJoin(-1));
+		joins.add(new SortMergeJoin());
 		
 		long[] times = new long[joins.size()];
 		

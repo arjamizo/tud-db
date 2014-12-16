@@ -17,8 +17,11 @@ public class HashJoin implements Join {
     }
 
 	int cores = 0;
+	/**
+	 * Do not use multiple cores by default.
+	 */
 	public HashJoin() {
-		this.cores = -1;
+		this.cores = 0;
 	}
 	
 	public HashJoin(int cores) {

@@ -88,8 +88,11 @@ public class SortMergeJoin implements Join{
 	    this.cores = cores;
 	}
 	
+	/**
+	 * Do not use multiple cores by default.
+	 */
 	public SortMergeJoin() {
-		this.cores = -1;
+		this.cores = 0;
 	}
 
 	public static <T> int upper_bound(T[] arr, T key, Comparator<T> c, int from, int to) {
