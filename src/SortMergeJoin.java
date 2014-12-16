@@ -38,6 +38,7 @@ public class SortMergeJoin implements Join{
 				return o1.getID()-o2.getID();
 			}
 		};
+		/*
 		new PerfTest().addTest("finishing iteration by learning max size", new Runnable() {
 
 			List<String> list = Arrays.asList((new String(new char[10000]).replace("\0", "a")).split("a"));
@@ -64,9 +65,11 @@ public class SortMergeJoin implements Join{
 				}
 			}
 		}).perform();
-		
+		*/
 		System.out.println("<testing-framework>");
+		/*
 		testInterface(new SortMergeJoin());
+		*/
 		System.out.println("</testing-framework>");
 	}
 
@@ -80,7 +83,11 @@ public class SortMergeJoin implements Join{
 	}
 	
 	public SortMergeJoin() {
-	    this.cores = 0;
+	    try {
+		this.cores = Runtime.getRuntime().availableProcessors();
+	    } catch (Throwable e) {
+		this.cores = 0;
+	    }
 	}
 
 	public static <T> int upper_bound(T[] arr, T key, Comparator<T> c, int from, int to) {
@@ -131,8 +138,8 @@ public class SortMergeJoin implements Join{
 	}
 	
 	public List<Triple> join(List<Tuple> input1, List<Tuple> input2) {
-		if(input1.size() < 1e2)
-		System.out.printf("Joining: \n\t%s\n\t%s\n", input1, input2);
+//		if(input1.size() < 1e2)
+//		System.out.printf("Joining: \n\t%s\n\t%s\n", input1, input2);
 		
 		final Tuple inp1[], inp2[];
 		{
@@ -140,7 +147,7 @@ public class SortMergeJoin implements Join{
 		inp1 = input1.toArray(new Tuple[0]);
 		inp2 = input2.toArray(new Tuple[0]);
 		long end = System.currentTimeMillis();
-		System.out.printf("time conv=%d\n", end-start);
+//		System.out.printf("time conv=%d\n", end-start);
 		}
 
 		{
@@ -148,7 +155,7 @@ public class SortMergeJoin implements Join{
 		java.util.Arrays.sort(inp1, cmp);
 		java.util.Arrays.sort(inp2, cmp);
 		long end = System.currentTimeMillis();
-		System.out.printf("time sort=%d\n", end-start);
+//		System.out.printf("time sort=%d\n", end-start);
 		}
 
 		/*
@@ -170,7 +177,7 @@ public class SortMergeJoin implements Join{
 			public Runnable init(int id,  int maxid) {
 			    start = (int)Math.floor(inp1.length*id/maxid);
 			    end = (int)Math.floor(inp1.length*(id+1)/maxid);
-			    System.out.println("Thread: "+start+".."+end);
+//			    System.out.println("Thread: "+start+".."+end);
 			    return this;
 			}
 			
@@ -193,7 +200,7 @@ public class SortMergeJoin implements Join{
 		return maxid>0 ? ret : handleSubset(start, end, inp1, inp2);
 	}
 
-    private List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
+    public List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
 	List<Triple> ret = new LinkedList();
 	long total=0, inside=0;
 	int prevId = -1;
@@ -223,7 +230,7 @@ public class SortMergeJoin implements Join{
 	    long e = System.currentTimeMillis();
 	    total += e-s;
 	}
-	System.out.printf("percentage time=%f\n", 1.0f*inside/total);
+//	System.out.printf("percentage time=%f\n", 1.0f*inside/total);
 	return ret;
     }
 
