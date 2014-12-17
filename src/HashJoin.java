@@ -10,7 +10,7 @@ public class HashJoin implements Join {
 	
 	static {
 		try {
-			SortMergeJoin.testInterface(new HashJoin());
+			JoinTesting.testInterface(new HashJoin());
 		} catch (Throwable e) {
 			System.err.println("Cannot run tests for HashJoin");
 		}
