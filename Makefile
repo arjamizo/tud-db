@@ -15,6 +15,7 @@ CLASSES = \
 	# src/Touple.java
 	
 run: classes
+	mkdir -p .bin
 	java -cp .bin Starter
 
 default: run
