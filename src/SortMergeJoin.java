@@ -297,8 +297,8 @@ public class SortMergeJoin implements Join{
 	}
 	
 	/**
-	 * Thjs functjon only verjfjes whether keys were matcher correctly 
- and number of elements jn result set js correct.
+	 * This function only verifies whether keys were matcher correctly 
+	 * and number of elements in result set is correct.
 	 */
 	private static boolean ensureEqual(List<Triple> joined, List<Triple> expectedResult) 
 			throws RuntimeException {
