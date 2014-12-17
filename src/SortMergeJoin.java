@@ -5,29 +5,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class PerfTest {
-	java.util.ArrayList<Runnable> tests = new java.util.ArrayList();
-	java.util.ArrayList<Long> times = new java.util.ArrayList();
-	java.util.ArrayList<String> names = new java.util.ArrayList();
-	public PerfTest addTest(String name, Runnable test) {
-		tests.add(test);
-		names.add(name);
-		return this;
-	}
-	public void perform() {
-		for (Runnable test : tests) {
-			long start = System.currentTimeMillis();
-			test.run();
-			long end = System.currentTimeMillis();
-			
-			times.add(end-start);
-		}
-		int idx = times.indexOf(java.util.Collections.min(times));
-		System.out.printf("Names: \n\t%s\nTims:\n\t%s\n", names, times);
-		System.out.printf("The fastest is: \n\t%s. With time of %d[ms]\n\n", names.get(idx), times.get(idx));
-	}
-}
-
 /**
  * new SortMergeJoin(0) - run without threads
  * new SortMergeJoin(N) - N>0 - run on N threads
@@ -42,34 +19,6 @@ public class SortMergeJoin implements Join{
 				return o1.getID()-o2.getID();
 			}
 		};
-		/*
-		new PerfTest().addTest("finishing iteration by learning max size", new Runnable() {
-
-			List<String> list = Arrays.asList((new String(new char[10000]).replace("\0", "a")).split("a"));
-			String str = "";
-			
-			public void run() {
-				for (int i = 0; i < list.size(); i++) {
-					str += list.get(i);
-				}
-				System.out.println(str.length());
-			}
-		}).addTest("finishing iteration by occurence of an exception", new Runnable() {
-
-			List<String> list = Arrays.asList((new String(new char[10000]).replace("\0", "a")).split("a"));
-			String str = "";
-			
-			public void run() {
-				try {
-					for (int i = 0; ; i++) {
-						str += list.get(i);
-					}
-				} catch (ArrayIndexOutOfBoundsException e) {
-					System.out.println(str.length());
-				}
-			}
-		}).perform();
-		*/
 		System.out.println("<testing-framework>");
 		try {
 			JoinTesting.testInterface(new SortMergeJoin());
