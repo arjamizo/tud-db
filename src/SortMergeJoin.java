@@ -296,13 +296,6 @@ public class SortMergeJoin implements Join{
 		System.out.printf("Got:\n\t%s\n\tand was expecting:\n\t%s\n\n", joined, expectedResult);
 		if(joined.size() != expectedResult.size()) 
 			throw new RuntimeException("size is not equal "+Integer.toString(joined.size()) + " vs "+Integer.toString(expectedResult.size()));
-		for (Triple triple : joined) {
-			if(!it.hasNext()) return false;
-			int id = it.next().getID();
-			int id2 = triple.getID();
-			if(id2!=id) 
-				throw new RuntimeException("ID's are not equal");
-		}
 		return true;
 	}
 
