@@ -75,7 +75,9 @@ public class HashJoin implements Join {
 		
 		/* There might be some keys, which are present 
 		   in buckets2, but not in buckets1 */
-		for (Integer key : buckets2.keySet() ) {
+		java.util.Set<Integer> diff = buckets2.keySet();
+		diff.removeAll(buckets1.keySet());
+		for (Integer key : diff ) {
 			if(buckets1.containsKey(key)) continue; //it was already processed
 			List<Tuple> l1 = buckets2.get(key);
 			List<Tuple> l2 = buckets1.get(key);
