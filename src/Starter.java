@@ -41,9 +41,8 @@ public class Starter {
 		
 		List<Join> joins = new ArrayList<Join>();
 		joins.add(new NestedLoopJoin());
-//		joins.add(new SortMergeJoin(4));
-		joins.add(new HashJoin());
 		joins.add(new SortMergeJoin());
+		joins.add(new HashJoin());
 		
 		long[] times = new long[joins.size()];
 		
