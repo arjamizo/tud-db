@@ -84,6 +84,10 @@ public class SortMergeJoin implements Join{
 	}
 	
 	int cores = 0;
+	/**
+	 * @param cores if 0: sequential processing, -1: automatically pickup number
+	 * of processors, N: force number of threads
+	 */
 	public SortMergeJoin(int cores) {
 	    this.cores = cores;
 	}
@@ -170,43 +174,7 @@ public class SortMergeJoin implements Join{
 		
 		final int start = 0, end = inp1.length;
 		
-		final List<Triple> ret = Collections.synchronizedList(new LinkedList<Triple>());
-		
-		List<Thread> threads = Collections.synchronizedList(new LinkedList());
-		int maxid = 0; 
-		if(this.cores==-1) {
-			maxid=input1.size() * input2.size() >= 5e5 ? Runtime.getRuntime().availableProcessors() : 0;
-//			maxid = Runtime.getRuntime().availableProcessors();
-		}
-		for (int i = 0; i < maxid; i++) {
-		    Thread thread = new Thread(new Runnable() {
-			
-			int start, end;
-			
-			public Runnable init(int id,  int maxid) {
-			    start = (int)Math.floor(inp1.length*id/maxid);
-			    end = (int)Math.floor(inp1.length*(id+1)/maxid);
-//			    System.out.println("Thread: "+start+".."+end);
-			    return this;
-			}
-			
-			public void run() {
-			    List l = handleSubset(this.start, this.end, inp1, inp2);
-			    ret.addAll(l);
-			}
-		    }.init(i, maxid));
-		    threads.add(thread);
-		    thread.start();
-		}
-		
-		for (Thread thread : threads) {
-		    try {
-			thread.join();
-		    } catch (InterruptedException ex) {
-			Logger.getLogger(SortMergeJoin.class.getName()).log(Level.SEVERE, null, ex);
-		    }
-		}
-		return maxid>0 ? ret : handleSubset(start, end, inp1, inp2);
+		return this.cores>0 ? multiThreadWrapper(start, end, inp1, inp2) : handleSubset(start, end, inp1, inp2);
 	}
 
     public List<Triple> handleSubset(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
@@ -242,6 +210,48 @@ public class SortMergeJoin implements Join{
 //	System.out.printf("percentage time=%f\n", 1.0f*inside/total);
 	return ret;
     }
+	
+	
+	private List<Triple> multiThreadWrapper(int start, int end, final Tuple[] inp1, final Tuple[] inp2) {
+		
+		final List<Triple> ret = Collections.synchronizedList(new LinkedList<Triple>());
+		
+		List<Thread> threads = Collections.synchronizedList(new LinkedList());
+		int maxid = 0; 
+		if(this.cores == -1) {
+			maxid=inp1.length * inp2.length >= 5e5 ? Runtime.getRuntime().availableProcessors() : 0;
+//			maxid = Runtime.getRuntime().availableProcessors();
+		}
+		for (int i = 0; i < maxid; i++) {
+		    Thread thread = new Thread(new Runnable() {
+			
+			int start, end;
+			
+			public Runnable init(int id,  int maxid) {
+			    start = (int)Math.floor(inp1.length*id/maxid);
+			    end = (int)Math.floor(inp1.length*(id+1)/maxid);
+//			    System.out.println("Thread: "+start+".."+end);
+			    return this;
+			}
+			
+			public void run() {
+			    List l = handleSubset(this.start, this.end, inp1, inp2);
+			    ret.addAll(l);
+			}
+		    }.init(i, maxid));
+		    threads.add(thread);
+		    thread.start();
+		}
+		
+		for (Thread thread : threads) {
+		    try {
+				thread.join();
+		    } catch (InterruptedException ex) {
+				Logger.getLogger(SortMergeJoin.class.getName()).log(Level.SEVERE, null, ex);
+		    }
+		}
+		return ret;
+	}
 
 	public static void testInterface(Join joinImpl) {
 		ensureEqual(joinImpl.join(
